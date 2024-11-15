@@ -1,74 +1,68 @@
 import streamlit as st
 from bertopic import BERTopic
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
+import pandas as pd
 
 # Load the trained BERTopic model
 @st.cache_resource
 def load_model():
-    # Replace with the path where you saved the BERTopic model
     return BERTopic.load("Trained_models/bertopic_news_model")
 
-# Load the model
-topic_model = load_model()
+# Load the dataset
+@st.cache_resource
+def load_dataset():
+    import json
+    with open("samplesentenceList.json", "r") as file:
+        return json.load(file)
 
-# Function to display the topic hierarchy
-def display_topic_hierarchy():
+# Load model and dataset
+topic_model = load_model()
+docs = load_dataset()
+
+# Visualizations
+def visualize_barchart():
+    st.subheader("Barchart of Top Words per Topic")
+    fig = topic_model.visualize_barchart()
+    st.plotly_chart(fig)
+
+def visualize_heatmap():
+    st.subheader("Topic-Topic Similarity Heatmap")
+    fig = topic_model.visualize_heatmap()
+    st.plotly_chart(fig)
+
+def visualize_hierarchy():
     st.subheader("Topic Hierarchy (Dendrogram)")
     fig = topic_model.visualize_hierarchy()
     st.plotly_chart(fig)
 
-# Function to display the topic distribution
-def display_topic_distribution():
-    st.subheader("Topic Distribution")
-    topics, _ = topic_model.get_topic_info(), topic_model.get_topics()
-    topic_counts = topic_model.get_topic_info()
-    
-    # Plotting topic distribution as a boxplot
-    fig, ax = plt.subplots()
-    sns.boxplot(data=topics, x='Topic', y='Count', ax=ax)
-    st.pyplot(fig)
-
-# Function to display the topic frequencies
-def display_topic_frequencies():
-    st.subheader("Topic Frequencies")
-    topics, _ = topic_model.get_topic_info(), topic_model.get_topics()
+def visualize_topics():
+    st.subheader("Topic Overview")
     fig = topic_model.visualize_topics()
     st.plotly_chart(fig)
-
-# Function to display a topic's words
-def display_topic_words(topic_id):
-    st.subheader(f"Top words for Topic {topic_id}")
-    words = topic_model.get_topic(topic_id)
-    st.write(words)
-
-# Interactive topic selection for words visualization
-def display_topic_words_interactive():
-    topics = topic_model.get_topic_info()
-    topic_id = st.selectbox("Select Topic", topics['Topic'].unique())
-    if topic_id is not None:
-        display_topic_words(topic_id)
 
 # Main app
 def main():
     st.title("BERTopic Visualization Dashboard")
 
-    # Display available visualizations
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Choose a page", ("Topic Hierarchy", "Topic Distribution", "Topic Frequencies", "Topic Words"))
+    visualizations = [
+        "Barchart of Top Words per Topic",
+        "Topic-Topic Heatmap",
+        "Topic Hierarchy",
+        "Topic Overview",
+    ]
+    selected_vis = st.sidebar.selectbox("Select Visualization", visualizations)
 
-    if page == "Topic Hierarchy":
-        display_topic_hierarchy()
+    if selected_vis == "Barchart of Top Words per Topic":
+        visualize_barchart()
 
-    elif page == "Topic Distribution":
-        display_topic_distribution()
+    elif selected_vis == "Topic-Topic Heatmap":
+        visualize_heatmap()
 
-    elif page == "Topic Frequencies":
-        display_topic_frequencies()
+    elif selected_vis == "Topic Hierarchy":
+        visualize_hierarchy()
 
-    elif page == "Topic Words":
-        display_topic_words_interactive()
+    elif selected_vis == "Topic Overview":
+        visualize_topics()
 
 # Run the app
 if __name__ == "__main__":
