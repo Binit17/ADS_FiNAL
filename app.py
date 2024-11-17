@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Load the trained BERTopic model
 @st.cache_resource
 def load_model():
-    return BERTopic.load("Trained_models/bertopic_lenovo_model")
+    return BERTopic.load("Trained_models/bertopic_news_model")
 
 # Load the dataset
 @st.cache_resource
@@ -83,15 +83,19 @@ def analyze_article():
             st.warning("Please provide an article for analysis.")
             return
         
-        # Get topic distribution for the article
+        # Get topic distribution for the article from the news dataset model
         topics, probs = topic_model.transform([article])
-        
-        # Prepare data for visualization
+
+        if probs is None or len(probs[0]) == 0:
+            st.warning("No topics were assigned to this article.")
+            return
+
+        # Prepare data for visualization (Top 10 topics)
         topic_probs = sorted(
             [(topic, prob) for topic, prob in enumerate(probs[0])],
             key=lambda x: x[1],
             reverse=True
-        )[:10]  # Top 10 topics
+        )[:10]
         
         # Get top words for each topic
         topic_names = [", ".join([word for word, _ in topic_model.get_topic(topic)]) for topic, _ in topic_probs]
@@ -105,16 +109,27 @@ def analyze_article():
         st.write("### Topic Distribution Table")
         st.dataframe(df, use_container_width=True)
         
-        # Plot pie chart
-        fig = px.pie(
+        # Plot Pie chart
+        fig_pie = px.pie(
             df,
             values="Probability",
             names="Topic",
-            title="Topic Distribution",
+            title="Topic Distribution (Pie Chart)",
             color="Topic",
             color_discrete_sequence=px.colors.qualitative.Set3
         )
-        st.plotly_chart(fig)
+        st.plotly_chart(fig_pie)
+
+        # Plot Bar chart
+        fig_bar = px.bar(
+            df,
+            x="Topic",
+            y="Probability",
+            title="Topic Distribution (Bar Chart)",
+            color="Topic",
+            color_discrete_sequence=px.colors.qualitative.Set3
+        )
+        st.plotly_chart(fig_bar)
 
 # Main app
 def main():
