@@ -75,3 +75,5 @@ An interactive Streamlit app was built to visualize and explore the results of t
 ---
 
 <!-- Stay tuned for more updates and detailed discussions in this repository! -->
+
+## This project was completed as a part of capstone project for **Samsung Innovation Campus AI programme**. For more information go through the report uploaded.
