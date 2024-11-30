@@ -12,9 +12,9 @@ This project explores the use of three powerful techniques for topic modeling:
 
 We used three datasets to evaluate the topic modeling methods:
 
-1. [Dataset 1](<add link>)
-2. [Dataset 2](<add link>)
-3. [Dataset 3](<add link>)
+1. [Amazon US Customer Reviews Dataset](https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset/data)
+2. [Global News Dataset](https://www.kaggle.com/datasets/everydaycodings/global-news-dataset)
+3. [Lenovo K8 Review Dataset](https://www.kaggle.com/datasets/abhiram8/lenovok8review)
 
 ## Learning Outcomes
 
